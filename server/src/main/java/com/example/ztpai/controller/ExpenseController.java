@@ -2,41 +2,45 @@ package com.example.ztpai.controller;
 
 import com.example.ztpai.model.Expense;
 import com.example.ztpai.repository.ExpenseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Calendar;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/expenses")
 public class ExpenseController {
 
-    private final ExpenseRepository repository;
-
-    public ExpenseController(ExpenseRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private ExpenseRepository repository;
 
     // getting all expenses
-    @GetMapping("/expenses")
+    @GetMapping("/")
+    @CrossOrigin(origins = "http://localhost:3000")
     List<Expense> all() {
+        System.out.println("Expenses");
         return repository.findAll();
     }
 
     // adding new expense
-    @PostMapping("/expenses")
+    @PostMapping("/")
+    @CrossOrigin(origins = "http://localhost:3000")
     Expense newExpense(@RequestBody Expense newExpense) {
+        System.out.println("amount: " + newExpense.getAmount());
+        System.out.println("date: " + newExpense.getDate());
         return repository.save(newExpense);
     }
 
     // get one expense
-    @GetMapping("/expenses/{id}")
+    @GetMapping("/{id}")
     Expense one(@PathVariable Long id) {
+        System.out.println("id " + id);
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException());
     }
 
-    @PutMapping("/expenses/{id}")
+    @PutMapping("/{id}")
     Expense replaceExpense(@RequestBody Expense newExpense, @PathVariable Long id) {
         return repository.findById(id)
                 .map(expense -> {
@@ -44,7 +48,7 @@ public class ExpenseController {
                     expense.setCategory(newExpense.getCategory());
                     expense.setComment(newExpense.getComment());
                     expense.setCurrency(newExpense.getCurrency());
-                    expense.setDate(Calendar.getInstance().getTime());
+                    expense.setDate(newExpense.getDate());
                     return repository.save(expense);
                 })
                 .orElseGet(() -> {
@@ -53,7 +57,7 @@ public class ExpenseController {
                 });
     }
 
-    @DeleteMapping("/expenses/{id}")
+    @DeleteMapping("/{id}")
     void deleteExpense(@PathVariable Long id) {
         repository.deleteById(id);
     }

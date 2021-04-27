@@ -1,11 +1,6 @@
 package com.example.ztpai.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Calendar;
-import java.util.Date;
+import javax.persistence.*;
 
 @Entity
 public class Expense {
@@ -17,18 +12,18 @@ public class Expense {
     private String currency;
     private String comment;
     private String category;
-    private Date date;
+    private String date;
 
     public Expense() {
 
     }
 
-    public Expense(double amount, String currency, String comment, String category) {
+    public Expense(double amount, String currency, String comment, String category, String date) {
         this.amount = amount;
         this.currency = currency;
         this.comment = comment;
         this.category = category;
-        this.date = Calendar.getInstance().getTime();
+        this.date = date;
     }
 
     public Long getId() {
@@ -71,11 +66,11 @@ public class Expense {
         this.category = category;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
