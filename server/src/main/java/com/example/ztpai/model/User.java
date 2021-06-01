@@ -1,12 +1,24 @@
 package com.example.ztpai.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sun.istack.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property="@id")
 public class User {
 
     @Id
@@ -34,80 +46,11 @@ public class User {
     @ManyToMany
     private Set<Role> roles;
 
-//    public User() {
-//    }
-//
-//    public User(Long id, String firstname, String lastname, String email, String username, String password, String passwordConfirm) {
-//        this.id = id;
-//        this.firstname = firstname;
-//        this.lastname = lastname;
-//        this.email = email;
-//        this.username = username;
-//        this.password = password;
-//        this.passwordConfirm = passwordConfirm;
-//    }
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "users")
+    private List<Expense> expenses;
 
-    public String getUsername() {
-        return username;
-    }
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<Group> groups;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
-
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
 }
