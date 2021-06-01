@@ -1,12 +1,24 @@
 package com.example.ztpai.controller;
 
+import com.example.ztpai.dto.ExpenseDTO;
+import com.example.ztpai.model.Category;
 import com.example.ztpai.model.Expense;
+import com.example.ztpai.repository.CategoryRepository;
 import com.example.ztpai.repository.ExpenseRepository;
+import com.example.ztpai.repository.GroupRepository;
+import com.example.ztpai.repository.UserRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -14,30 +26,67 @@ public class ExpenseController {
 
     @Autowired
     private ExpenseRepository repository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    ModelMapper modelMapper;
 
-    // getting all expenses
+    String getUser() {
+        String username;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+        return username;
+    }
+
+    private LocalDateTime getCurrentDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        return LocalDateTime.parse(LocalDateTime.now().format(formatter)).withNano(0);
+    }
+
     @GetMapping("/")
     @CrossOrigin(origins = "http://localhost:3000")
-    List<Expense> all() {
-        System.out.println("Expenses");
-        return repository.findAll();
+    List<ExpenseDTO> all() {
+        Long userId = userRepository.findByUsername(getUser()).getId();
+        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
+        List<ExpenseDTO> expensesDTO = new ArrayList<>();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        if(modelMapper.getTypeMap(Expense.class, ExpenseDTO.class) == null) {
+            modelMapper.createTypeMap(Expense.class, ExpenseDTO.class)
+                    .addMappings(mapper -> mapper.map(src -> src.getCategory().getName(), ExpenseDTO::setCategory));
+        }
+
+        for(Expense expense: expenses) {
+            expensesDTO.add(modelMapper.map(expense, ExpenseDTO.class));
+        }
+        return expensesDTO;
     }
 
-    // adding new expense
-    @PostMapping("/")
+    @PostMapping("/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
-    Expense newExpense(@RequestBody Expense newExpense) {
-        System.out.println("amount: " + newExpense.getAmount());
-        System.out.println("date: " + newExpense.getDate());
-        return repository.save(newExpense);
+    Expense newExpense(@RequestBody ExpenseDTO newExpense, @PathVariable Long id) {
+        Expense expense = modelMapper.map(newExpense, Expense.class);
+        if(id != 0) {
+            expense.setGroup(groupRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        }
+
+        expense.setUser(userRepository.findByUsername(getUser()));
+        expense.setCategory(categoryRepository.findCategoryByName(newExpense.getCategory()));
+        expense.setDate(getCurrentDate());
+        return repository.save(expense);
     }
 
-    // get one expense
     @GetMapping("/{id}")
     Expense one(@PathVariable Long id) {
-        System.out.println("id " + id);
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @PutMapping("/{id}")
@@ -56,6 +105,39 @@ public class ExpenseController {
                     return repository.save(newExpense);
                 });
     }
+
+    @GetMapping("/monthly")
+    List<ExpenseDTO> getMonthlyExpenses() {
+        Long userId = userRepository.findByUsername(getUser()).getId();
+
+        return null;
+    }
+
+    @GetMapping("/category")
+    Map<String, Double> getCategoryExpenses() {
+        Long userId = userRepository.findByUsername(getUser()).getId();
+        Map<String, Double> categoryExpenses = new HashMap<>();
+        List<Expense> expenses = repository.findAllByUserId(userId);
+        List<Category> categories = new ArrayList<>();
+        for(Expense expense: expenses) {
+            categories.add(expense.getCategory());
+        }
+
+        for(Category category: categories) {
+            double amount = 0;
+            for(Expense expense: expenses) {
+                if(expense.getCategory() == category) {
+                    amount += expense.getAmount();
+                }
+            }
+            categoryExpenses.put(category.getName(), amount);
+        }
+
+        return categoryExpenses;
+    }
+
+
+
 
     @DeleteMapping("/{id}")
     void deleteExpense(@PathVariable Long id) {
