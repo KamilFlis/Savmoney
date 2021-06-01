@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -56,12 +57,48 @@ const useStyles = makeStyles((theme) => ({
 export default function AddExpense() {
 
     const classes = useStyles();
+    const history = useHistory();
 
     const [amount, setAmount] = useState(0);
     const [comment, setComment] = useState('');
     const [currency, setCurrency] = useState('');
     const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState([]);
     
+    let {id} = useParams();
+    if(id === undefined) {
+        id = 0;
+    }
+    
+    const url = "http://localhost:8080/";
+    const token = localStorage.getItem("token");
+    
+    if(!token) {
+        history.push("/login");
+    }
+
+    useEffect(() => {
+        axios.get(`${url}api/expenses/categories`, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        })
+        .then((response) => {
+            console.log(response);
+            if(response.status === 401) {
+                history.push("/login");
+            }
+
+            setCategories(response.data);
+
+        }, (error) => {
+            console.log(error);
+        });
+
+    }, [])
+
+
+
     const handleChangeCurrency = (event) => {
         setCurrency(event.target.value);
     };
@@ -70,26 +107,27 @@ export default function AddExpense() {
         setCategory(event.target.value);
     }
 
-    const url = "http://localhost:8080/";
-
     const onSubmit = (event) => {
-        let [month, day, year]    = new Date().toLocaleDateString().split("/")
-        let [hour, minute, second] = new Date().toLocaleTimeString("pl-PL", { hour12: false }).split(/:| /)
-        let date = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+        // let [month, day, year]    = new Date().toLocaleDateString().split("/")
+        // let [hour, minute, second] = new Date().toLocaleTimeString("pl-PL", { hour12: false }).split(/:| /)
+        // let date = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
 
-        axios.post(`${url}api/expenses/`, {
+        axios.post(`${url}api/expenses/${id}`, {
             amount: amount,
             comment: comment,
             currency: currency,
             category: category,
-            date: date
+            // date: date,
         }, {
             headers: {
-                Authorization: 'Bearer '
+                Authorization: "Bearer " + token
             }
         })
         .then((response) => {
             console.log(response);
+            if(response.status === 401) {
+                history.push("/login");
+            }
         }, (error) => {
             console.log(error);
         });
@@ -149,9 +187,12 @@ export default function AddExpense() {
                                 value={category}
                                 onChange={handleChangeCategory}
                             >
-                                <MenuItem value={"Car"}>Car</MenuItem>
+                                {categories.map((category) => {
+                                  return <MenuItem value={category.name}>{category.name}</MenuItem>  
+                                })}
+                                {/* <MenuItem value={"Car"}>Car</MenuItem>
                                 <MenuItem value={"Food"}>Food</MenuItem>
-                                <MenuItem value={"Category3"}>Category 3</MenuItem>
+                                <MenuItem value={"Category3"}>Category 3</MenuItem> */}
                             </Select>
                         </FormControl>
                     </Grid>

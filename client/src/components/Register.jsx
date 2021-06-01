@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -16,6 +15,10 @@ import axios from 'axios';
 
 
 const useStyles = makeStyles((theme) => ({
+    header: {
+        marginBottom: theme.spacing(5),
+        justifySelf: 'center',
+    },
     paper: {
         marginTop: theme.spacing(8),
         display: 'flex',
@@ -37,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register() {
     const classes = useStyles();
+    const history = useHistory();
 
     const [firstname, setFirstname] = useState();
     const [lastname, setLastname] = useState();
@@ -57,7 +61,10 @@ export default function Register() {
             passwordConfirm: passwordConfirm,
         })
         .then(res => { 
-            console.log(res)
+            console.log(res);
+            if(res.status === 200) {
+                history.push("/login");
+            }
         }, error => {
             console.log(error);
         });
@@ -69,6 +76,14 @@ export default function Register() {
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
+                <div className={classes.header}>
+                    <Typography component="h1" variant="h4" align="center">
+                        Savmoney
+                    </Typography>
+                    <Typography component="h1" variant="h5" align="center">
+                        Save money by controlling your expenses
+                    </Typography>
+                </div>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
@@ -150,12 +165,6 @@ export default function Register() {
                                 id="confirm-password"
                                 autoComplete="confirm-password"
                                 onChange={(event) => setPasswordConfirm(event.target.value)}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
                             />
                         </Grid>
                     </Grid>

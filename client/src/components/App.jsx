@@ -5,6 +5,10 @@ import Expenses from "./ExpensesTable";
 import Login from "./Login";
 import Register from "./Register";
 import AddExpense from "./AddExpense";
+import Group from "./Group";
+import GroupDetails from './GroupDetails';
+import GroupExpensesTable from './GroupExpensesTable';
+import Summary from './Summary';
 
 export default function App() {
     return (
@@ -24,6 +28,26 @@ export default function App() {
                     <Route exact path="/add-expense">
                         <Navigation />
                         <AddExpense />
+                    </Route>
+                    <Route exact path="/summary">
+                        <Navigation />
+                        <Summary />
+                    </Route>
+                    <Route exact path="/groups">
+                        <Navigation />
+                        <Group />
+                    </Route>
+                    <Route exact path="/groups/:id">
+                        <Navigation />
+                        <GroupExpensesTable />
+                    </Route>
+                    <Route exact path="/groups/:id/add-expense">
+                        <Navigation />
+                        <AddExpense />
+                    </Route>
+                    <Route exact path="/groups/:id/details">
+                        <Navigation />
+                        <GroupDetails />
                     </Route>
                 </Switch>
             </BrowserRouter>

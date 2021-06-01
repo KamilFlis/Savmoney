@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -9,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import axios from 'axios';
 
@@ -44,7 +46,7 @@ const columns = [
     },
 ];
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
         position: 'fixed',
         bottom: 80,
@@ -54,28 +56,48 @@ const useStyles = makeStyles({
     container: {
         height: 600,
     },
-});
+    buttons: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+    button: {
+        marginTop: theme.spacing(3),
+        marginLeft: theme.spacing(1),
+    },
+}));
 
 export default function ExpensesTable() {
+    
     const classes = useStyles();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const [expenses, setExpenses] = useState([]);
     const url = "http://localhost:8080/";
+    const token = localStorage.getItem("token");
+
+    const history = useHistory();
+
+    if(!token) {
+        history.push("/login");
+    }
 
     useEffect(() => {
         getAllExpenses();
     }, []);
-    
+
     const getAllExpenses = () => {
         axios.get(`${url}api/expenses/`, {
             headers: {
-                Authorization: 'Bearer '
+                Authorization: "Bearer " + token
             }
         })
         .then((response) => {
             console.log(response)
+            if(response.status === 401) {
+                localStorage.removeItem("token");
+                history.push("/login");
+            }
             setExpenses(response.data);
         })
         .catch(error => console.error(`Error ${error}`));
@@ -94,6 +116,19 @@ export default function ExpensesTable() {
 
     return (
         <Paper className={classes.root}>
+            <div className={classes.buttons}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    align="right"
+                    onClick={() => {
+                        history.push(`/add-expense`)
+                    }}
+                    className={classes.button}
+                >
+                    New expense
+                </Button> 
+            </div>
             <Typography component="h2" variant="h6" color="black" align="right" gutterBottom>
                 Your expenses
             </Typography>

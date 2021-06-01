@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -42,6 +43,7 @@ export default function Login() {
     const classes = useStyles();
 
     const url = "http://localhost:8080"
+    const history = useHistory();
 
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
@@ -52,7 +54,10 @@ export default function Login() {
             password: password,
         })
         .then(res => { 
-            console.log(res)
+            console.log(res);
+            localStorage.setItem("token", res.data);
+            history.push("/");
+
         }, error => {
             console.log(error);
         });
