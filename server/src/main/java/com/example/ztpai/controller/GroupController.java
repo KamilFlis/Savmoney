@@ -40,9 +40,9 @@ public class GroupController {
     private UserService userService;
 
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
 
-    String getUser() {
+    private String getUser() {
         String username;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {

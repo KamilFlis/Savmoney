@@ -9,6 +9,7 @@ import Group from "./Group";
 import GroupDetails from './GroupDetails';
 import GroupExpensesTable from './GroupExpensesTable';
 import Summary from './Summary';
+import MyProfile from './MyProfile';
 
 export default function App() {
     return (
@@ -48,6 +49,10 @@ export default function App() {
                     <Route exact path="/groups/:id/details">
                         <Navigation />
                         <GroupDetails />
+                    </Route>
+                    <Route exact path='/my-profile'>
+                        <Navigation />
+                        <MyProfile />
                     </Route>
                 </Switch>
             </BrowserRouter>
