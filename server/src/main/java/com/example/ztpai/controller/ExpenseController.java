@@ -52,7 +52,6 @@ public class ExpenseController {
     }
 
     @GetMapping("/")
-    @CrossOrigin(origins = "http://localhost:3000")
     List<ExpenseDTO> all() {
         Long userId = userRepository.findByUsername(getUser()).getId();
         List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
@@ -70,7 +69,6 @@ public class ExpenseController {
     }
 
     @PostMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")
     Expense newExpense(@RequestBody ExpenseDTO newExpense, @PathVariable Long id) {
         Expense expense = modelMapper.map(newExpense, Expense.class);
         if(id != 0) {

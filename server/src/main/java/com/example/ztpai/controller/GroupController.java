@@ -54,7 +54,6 @@ public class GroupController {
     }
 
     @GetMapping("/")
-    @CrossOrigin("http://localhost:3000")
     List<Group> all() {
        String username = getUser();
        User user = userService.findByUsername(username);
@@ -62,7 +61,6 @@ public class GroupController {
     }
 
     @PostMapping("/")
-    @CrossOrigin("http://localhost:3000")
     Group newGroup(@RequestBody GroupDTO newGroup) {
         Set<User> users = new HashSet<>();
         users.add(userRepository.findByUsername(this.getUser()));
@@ -72,14 +70,12 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")
     Group one(@PathVariable Long id) {
         return groupRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }
 
     @GetMapping("/{id}/users")
-    @CrossOrigin(origins = "http://localhost:3000")
     Set<UserDTO> groupUsers(@PathVariable Long id) {
         if(modelMapper.getTypeMap(User.class, UserDTO.class) == null) {
             modelMapper.createTypeMap(User.class, UserDTO.class)
@@ -98,12 +94,10 @@ public class GroupController {
         return usersDTO;
     }
 
-    @PostMapping("/{id}/users/add")
-    @CrossOrigin("http://localhost:3000")
+    @PutMapping("/{id}/users/add")
     void addUser(@RequestBody User user, @PathVariable Long id) {
         User foundUser = userService.findByUsername(user.getUsername());
-        Group group = groupRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+        Group group = groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         group.getUsers().add(foundUser);
         groupRepository.save(group);

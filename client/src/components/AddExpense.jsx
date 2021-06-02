@@ -14,9 +14,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: 'relative',
-    },
     layout: {
         width: 'auto',
         marginLeft: theme.spacing(2),
@@ -83,18 +80,16 @@ export default function AddExpense() {
                 Authorization: "Bearer " + token
             }
         })
-        .then((response) => {
+        .then(response => {
             console.log(response);
             if(response.status === 401) {
                 history.push("/login");
             }
 
             setCategories(response.data);
-
-        }, (error) => {
+        }, error => {
             console.log(error);
         });
-
     }, [])
 
 
@@ -108,16 +103,11 @@ export default function AddExpense() {
     }
 
     const onSubmit = (event) => {
-        // let [month, day, year]    = new Date().toLocaleDateString().split("/")
-        // let [hour, minute, second] = new Date().toLocaleTimeString("pl-PL", { hour12: false }).split(/:| /)
-        // let date = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
-
         axios.post(`${url}api/expenses/${id}`, {
             amount: amount,
             comment: comment,
             currency: currency,
             category: category,
-            // date: date,
         }, {
             headers: {
                 Authorization: "Bearer " + token

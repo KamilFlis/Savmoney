@@ -39,7 +39,6 @@ public class UserController {
     }
 
     @PostMapping("/api/register")
-    @CrossOrigin(origins = "http://localhost:3000")
     void register(@RequestBody User user, BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
 
@@ -52,7 +51,6 @@ public class UserController {
     }
 
     @PostMapping("/api/update")
-    @CrossOrigin(origins = "http://localhost:3000")
     void update(@RequestBody User user) {
         userService.update(user);
     }
