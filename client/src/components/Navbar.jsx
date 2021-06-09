@@ -56,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
     },
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         transition: theme.transitions.create('width'),
         width: '100%',
@@ -163,15 +162,7 @@ export default function Navbar() {
         <div className={classes.grow}>
             <AppBar position="static">
                 <Toolbar>
-                    {/*<IconButton*/}
-                    {/*    edge="start"*/}
-                    {/*    className={classes.menuButton}*/}
-                    {/*    color="inherit"*/}
-                    {/*    aria-label="open drawer"*/}
-                    {/*>*/}
-                    {/*    <MenuIcon />*/}
-                    {/*</IconButton>*/}
-                    <div className={classes.search}>
+                    {/* <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
@@ -183,7 +174,7 @@ export default function Navbar() {
                             }}
                             inputProps={{ 'aria-label': 'search' }}
                         />
-                    </div>
+                    </div> */}
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         <IconButton
@@ -195,7 +186,6 @@ export default function Navbar() {
                             color="inherit"
                         >
                             <AccountCircle />
-                            {/*<img className={classes.accountCircle} src="https://placeimg.com/75/75/any" />*/}
                         </IconButton>
                     </div>
                     <div className={classes.sectionMobile}>
@@ -206,7 +196,7 @@ export default function Navbar() {
                             onClick={handleMobileMenuOpen}
                             color="inherit"
                         >
-                            <MoreIcon />
+                            {/* <MoreIcon /> */}
                         </IconButton>
                     </div>
                 </Toolbar>

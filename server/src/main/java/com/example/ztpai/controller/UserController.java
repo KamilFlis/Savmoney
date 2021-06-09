@@ -41,12 +41,10 @@ public class UserController {
     @PostMapping("/api/register")
     void register(@RequestBody User user, BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
-
         if(bindingResult.hasErrors()) {
             System.out.println("Errors while registering");
             return;
         }
-
         userService.save(user);
     }
 
@@ -59,6 +57,12 @@ public class UserController {
     UserDTO getUserDetails() {
         User user = userRepository.findByUsername(getUser());
         return modelMapper.map(user, UserDTO.class);
+    }
+
+    @PostMapping("/api/changePassword")
+    void changePassword(@RequestBody User user) {
+        User actualUser = userRepository.findByUsername(getUser());
+        userService.changePassword(actualUser, user.getPassword());
     }
 
 }

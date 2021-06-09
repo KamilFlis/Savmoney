@@ -3,6 +3,7 @@ package com.example.ztpai.controller;
 import com.example.ztpai.dto.ExpenseDTO;
 import com.example.ztpai.model.Category;
 import com.example.ztpai.model.Expense;
+import com.example.ztpai.model.User;
 import com.example.ztpai.repository.CategoryRepository;
 import com.example.ztpai.repository.ExpenseRepository;
 import com.example.ztpai.repository.GroupRepository;
@@ -51,7 +52,7 @@ public class ExpenseController {
         return LocalDateTime.parse(LocalDateTime.now().format(formatter)).withNano(0);
     }
 
-    @GetMapping("/")
+    @GetMapping
     List<ExpenseDTO> all() {
         Long userId = userRepository.findByUsername(getUser()).getId();
         List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
@@ -76,7 +77,7 @@ public class ExpenseController {
         }
 
         expense.setUser(userRepository.findByUsername(getUser()));
-        expense.setCategory(categoryRepository.findCategoryByName(newExpense.getCategory()));
+        expense.setCategory(categoryRepository.findByName(newExpense.getCategory()));
         expense.setDate(getCurrentDate());
         return repository.save(expense);
     }
@@ -134,11 +135,33 @@ public class ExpenseController {
         return categoryExpenses;
     }
 
-
-
-
     @DeleteMapping("/{id}")
-    void deleteExpense(@PathVariable Long id) {
-        repository.deleteById(id);
+    void deleteExpense(@RequestBody ExpenseDTO expenseToDelete, @PathVariable Long id) {
+        Expense expense = modelMapper.map(expenseToDelete, Expense.class);
+        if(id != 0) {
+            expense.setGroup(groupRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        }
+
+        expense.setUser(userRepository.findByUsername(getUser()));
+        expense.setCategory(categoryRepository.findByName(expenseToDelete.getCategory()));
+
+        Expense expenseDelete = repository.findByAmountAndCommentAndUserIdAndGroupAndCategoryIdAndCurrencyAndDate(
+                expense.getAmount(),
+                expense.getComment(),
+                expense.getUser().getId(),
+                expense.getGroup(),
+                expense.getCategory().getId(),
+                expense.getCurrency(),
+                expense.getDate()
+        );
+
+        System.out.println("id: " + expenseDelete.getId());
+        System.out.println("user id: " + expenseDelete.getUser().getId());
+        System.out.println("group: " + expenseDelete.getGroup());
+        System.out.println("amount: " + expenseDelete.getAmount());
+        System.out.println("category: " + expenseDelete.getCategory().getName());
+        System.out.println("date: " + expenseDelete.getDate());
+
+        repository.delete(expenseDelete);
     }
 }

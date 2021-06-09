@@ -11,6 +11,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import axios from 'axios';
 
@@ -60,10 +61,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'flex-end',
     },
-    button: {
-        marginTop: theme.spacing(3),
-        marginLeft: theme.spacing(1),
-    },
+    deleteButton: {
+        marginTop: theme.spacing(2),
+    }
 }));
 
 export default function ExpensesTable() {
@@ -87,7 +87,7 @@ export default function ExpensesTable() {
     }, []);
 
     const getAllExpenses = () => {
-        axios.get(`${url}api/expenses/`, {
+        axios.get(`${url}api/expenses`, {
             headers: {
                 Authorization: "Bearer " + token
             }
@@ -103,8 +103,27 @@ export default function ExpensesTable() {
         .catch(error => console.error(`Error ${error}`));
     };
 
-    console.log(expenses);
-
+    const deleteExpense = row => {
+        console.log("row: ", row);
+        const id = 0;
+        axios.delete(`${url}api/expenses/${id}`, {
+            headers: {
+                Authorization: "Bearer " + token
+            }, data: {
+                amount: row.amount,
+                comment: row.comment,
+                currency: row.currency,
+                category: row.category,
+                date: row.date,
+            }
+        })
+        .then(response => {
+            console.log("Delete: ", response);
+        }, (error) => {
+            console.log(error);
+        });
+    };
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -124,7 +143,6 @@ export default function ExpensesTable() {
                     onClick={() => {
                         history.push(`/add-expense`)
                     }}
-                    className={classes.button}
                 >
                     New expense
                 </Button> 
@@ -159,6 +177,10 @@ export default function ExpensesTable() {
                                             </TableCell>
                                         );
                                     })}
+                                    <DeleteForeverIcon
+                                        className={classes.deleteButton}
+                                        onClick={() => deleteExpense(row)}
+                                    /> 
                                 </TableRow>
                             );
                         })}

@@ -46,11 +46,11 @@ public class User {
     @ManyToMany
     private Set<Role> roles;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.DETACH)
     @JsonManagedReference(value = "users")
     private List<Expense> expenses;
 
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "users")
     private List<Group> groups;
 
 }

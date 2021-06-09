@@ -29,7 +29,7 @@ public class Group {
     @ManyToMany
     private Set<User> users;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.DETACH)
     @JsonManagedReference(value = "groups")
     private List<Expense> expenses;
 

@@ -162,8 +162,6 @@ export default function AddExpense() {
                                 value={currency}
                                 onChange={handleChangeCurrency}
                             >
-                                <MenuItem value={"USD"}>USD</MenuItem>
-                                <MenuItem value={"CAD"}>CAD</MenuItem>
                                 <MenuItem value={"PLN"}>PLN</MenuItem>
                             </Select>
                         </FormControl>
@@ -180,9 +178,6 @@ export default function AddExpense() {
                                 {categories.map((category) => {
                                   return <MenuItem value={category.name}>{category.name}</MenuItem>  
                                 })}
-                                {/* <MenuItem value={"Car"}>Car</MenuItem>
-                                <MenuItem value={"Food"}>Food</MenuItem>
-                                <MenuItem value={"Category3"}>Category 3</MenuItem> */}
                             </Select>
                         </FormControl>
                     </Grid>

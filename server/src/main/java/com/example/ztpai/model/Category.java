@@ -19,7 +19,7 @@ public class Category {
     @NonNull
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.DETACH)
     @JsonManagedReference(value = "categories")
     private List<Expense> expenses;
 
