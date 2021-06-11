@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -57,7 +58,8 @@ public class ExpenseController {
         Long userId = userRepository.findByUsername(getUser()).getId();
         List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
         List<ExpenseDTO> expensesDTO = new ArrayList<>();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
         if(modelMapper.getTypeMap(Expense.class, ExpenseDTO.class) == null) {
             modelMapper.createTypeMap(Expense.class, ExpenseDTO.class)
                     .addMappings(mapper -> mapper.map(src -> src.getCategory().getName(), ExpenseDTO::setCategory));
@@ -66,6 +68,7 @@ public class ExpenseController {
         for(Expense expense: expenses) {
             expensesDTO.add(modelMapper.map(expense, ExpenseDTO.class));
         }
+
         return expensesDTO;
     }
 
@@ -77,7 +80,7 @@ public class ExpenseController {
         }
 
         expense.setUser(userRepository.findByUsername(getUser()));
-        expense.setCategory(categoryRepository.findByName(newExpense.getCategory()));
+        expense.setCategory(categoryRepository.findCategoryByName(newExpense.getCategory()));
         expense.setDate(getCurrentDate());
         return repository.save(expense);
     }
@@ -106,20 +109,50 @@ public class ExpenseController {
     }
 
     @GetMapping("/monthly")
-    List<ExpenseDTO> getMonthlyExpenses() {
+    Map<String, Double> getMonthlyExpenses() {
         Long userId = userRepository.findByUsername(getUser()).getId();
+        Map<String, Double> monthlyExpenses = new HashMap<>();
+        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
+        List<YearMonth> dates = new ArrayList<>();
+        for(Expense expense: expenses) {
+            YearMonth date = YearMonth.from(expense.getDate());
+            if(!dates.contains(date)) {
+                dates.add(YearMonth.from(date));
+            }
+        }
 
-        return null;
+        for(YearMonth date: dates) {
+            double amount = 0;
+            for(Expense expense: expenses) {
+                System.out.println(YearMonth.from(expense.getDate()));
+                if(YearMonth.from(expense.getDate()).equals(date)) {
+
+                    System.out.println("helo inside");
+                    amount += expense.getAmount();
+                }
+            }
+
+            monthlyExpenses.put(date.toString(), amount);
+        }
+
+        System.out.println(monthlyExpenses.get("2021-05"));
+        System.out.println(monthlyExpenses.get("2021-06"));
+
+
+        return monthlyExpenses;
     }
 
     @GetMapping("/category")
     Map<String, Double> getCategoryExpenses() {
         Long userId = userRepository.findByUsername(getUser()).getId();
         Map<String, Double> categoryExpenses = new HashMap<>();
-        List<Expense> expenses = repository.findAllByUserId(userId);
+        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
         List<Category> categories = new ArrayList<>();
         for(Expense expense: expenses) {
-            categories.add(expense.getCategory());
+            Category category = expense.getCategory();
+            if(!categories.contains(category)) {
+                categories.add(category);
+            }
         }
 
         for(Category category: categories) {
@@ -143,24 +176,21 @@ public class ExpenseController {
         }
 
         expense.setUser(userRepository.findByUsername(getUser()));
-        expense.setCategory(categoryRepository.findByName(expenseToDelete.getCategory()));
+        expense.setCategory(categoryRepository.findCategoryByName(expenseToDelete.getCategory()));
 
-        Expense expenseDelete = repository.findByAmountAndCommentAndUserIdAndGroupAndCategoryIdAndCurrencyAndDate(
+        Long groupId = null;
+        if(expense.getGroup() != null)
+            groupId = expense.getGroup().getId();
+
+        Expense expenseDelete = repository.findByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
                 expense.getAmount(),
                 expense.getComment(),
                 expense.getUser().getId(),
-                expense.getGroup(),
+                groupId,
                 expense.getCategory().getId(),
                 expense.getCurrency(),
                 expense.getDate()
         );
-
-        System.out.println("id: " + expenseDelete.getId());
-        System.out.println("user id: " + expenseDelete.getUser().getId());
-        System.out.println("group: " + expenseDelete.getGroup());
-        System.out.println("amount: " + expenseDelete.getAmount());
-        System.out.println("category: " + expenseDelete.getCategory().getName());
-        System.out.println("date: " + expenseDelete.getDate());
 
         repository.delete(expenseDelete);
     }

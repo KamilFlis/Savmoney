@@ -35,11 +35,8 @@ public class Expense {
     @JoinColumn(name = "category_id")
     @JsonBackReference(value = "categories")
     private Category category;
-
     private double amount;
     private String currency;
     private String comment;
-
     private LocalDateTime date;
-
 }

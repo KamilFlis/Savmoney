@@ -107,8 +107,16 @@ public class GroupController {
     List<ExpenseDTO> groupExpenses(@PathVariable Long id) {
         List<Expense> expenses = expenseRepository.findAllByGroupId(id);
         List<ExpenseDTO> expenseDTO = new ArrayList<>();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+        if(modelMapper.getTypeMap(Expense.class, ExpenseDTO.class) == null) {
+            modelMapper.createTypeMap(Expense.class, ExpenseDTO.class)
+                    .addMappings(mapper -> mapper.map(src -> src.getCategory().getName(), ExpenseDTO::setCategory))
+                    .addMappings(mapper -> mapper.map(src -> src.getUser().getUsername(), ExpenseDTO::setUsername));
+        }
+
         for(Expense expense: expenses) {
+//            System.out.println(expense.getUser().getUsername());
             expenseDTO.add(modelMapper.map(expense, ExpenseDTO.class));
         }
 
