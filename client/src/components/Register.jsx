@@ -60,14 +60,11 @@ export default function Register() {
             password: password,
             passwordConfirm: passwordConfirm,
         })
-        .then(res => { 
-            console.log(res);
-            if(res.status === 200) {
+        .then(response => { 
+            if(response.status === 200) {
                 history.push("/login");
             }
-        }, error => {
-            console.log(error);
-        });
+        }, error => console.error(error));
 
         event.preventDefault();
     };

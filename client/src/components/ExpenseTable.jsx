@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -15,97 +15,29 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import axios from 'axios';
 
-const columns = [
-    {
-        id: 'amount',
-        label: 'Amount', minWidth: 170,
-        align: "center",
-    },
-    {
-        id: 'currency',
-        label: 'Currency',
-        minWidth: 100,
-        align: "center",
-    },
-    {
-        id: 'comment',
-        label: 'Comment',
-        minWidth: 170,
-        align: 'center',
-    },
-    {
-        id: 'category',
-        label: 'Category',
-        minWidth: 170,
-        align: 'center',
-    },
-    {
-        id: 'date',
-        label: 'Date',
-        minWidth: 170,
-        align: 'center',
-    },
-];
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        position: 'fixed',
-        bottom: 80,
-        right: 80,
-        width: '75%',
-    },
-    container: {
-        height: 600,
-    },
-    buttons: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-    },
-    deleteButton: {
-        marginTop: theme.spacing(2),
-    }
-}));
-
-export default function ExpensesTable() {
+export default function ExpenseTable(props) {
     
-    const classes = useStyles();
+    const classes = props.styles;
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [expenses, setExpenses] = useState([]);
     const url = "http://localhost:8080/";
     const token = localStorage.getItem("token");
 
     const history = useHistory();
+    const columns = props.columns;
+    const expenses = props.data;
+
+    let { id } = useParams();
+    if(id === undefined) {
+        id = 0;
+    }
 
     if(!token) {
         history.push("/login");
     }
 
-    useEffect(() => {
-        getAllExpenses();
-    }, []);
-
-    const getAllExpenses = () => {
-        axios.get(`${url}api/expenses`, {
-            headers: {
-                Authorization: "Bearer " + token
-            }
-        })
-        .then((response) => {
-            console.log(response)
-            if(response.status === 401) {
-                localStorage.removeItem("token");
-                history.push("/login");
-            }
-            setExpenses(response.data);
-        })
-        .catch(error => console.error(`Error ${error}`));
-    };
-
-    const deleteExpense = row => {
-        console.log("row: ", row);
-        const id = 0;
+    const deleteExpense = row => {        
         axios.delete(`${url}api/expenses/${id}`, {
             headers: {
                 Authorization: "Bearer " + token
@@ -118,13 +50,14 @@ export default function ExpensesTable() {
             }
         })
         .then(response => {
-            console.log("Delete: ", response);
-        }, (error) => {
-            console.log(error);
-        });
+            if(response.status === 401) {
+                localStorage.removeItem("token");
+                history.push("/login");
+            }
+        }, error => console.error(error));
     };
     
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = (newPage) => {
         setPage(newPage);
     };
 
@@ -136,7 +69,7 @@ export default function ExpensesTable() {
     return (
         <Paper className={classes.root}>
             <div className={classes.buttons}>
-                <Button
+                { props.add && <Button
                     variant="contained"
                     color="primary"
                     align="right"
@@ -145,10 +78,10 @@ export default function ExpensesTable() {
                     }}
                 >
                     New expense
-                </Button> 
+                </Button> }
             </div>
             <Typography component="h2" variant="h6" color="black" align="right" gutterBottom>
-                Your expenses
+                {props.title}
             </Typography>
             <TableContainer className={classes.container}>
                 <Table stickyHeader aria-label="sticky table">
@@ -177,10 +110,11 @@ export default function ExpensesTable() {
                                             </TableCell>
                                         );
                                     })}
+                                    { props.delete && 
                                     <DeleteForeverIcon
                                         className={classes.deleteButton}
                                         onClick={() => deleteExpense(row)}
-                                    /> 
+                                    /> }
                                 </TableRow>
                             );
                         })}

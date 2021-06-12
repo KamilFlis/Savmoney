@@ -53,14 +53,11 @@ export default function Login() {
             username: username,
             password: password,
         })
-        .then(res => { 
-            console.log(res);
-            localStorage.setItem("token", res.data);
+        .then(response => { 
+            localStorage.setItem("token", response.data);
             history.push("/");
 
-        }, error => {
-            console.log(error);
-        });
+        }, error => console.eror(error));
 
         event.preventDefault();
     };

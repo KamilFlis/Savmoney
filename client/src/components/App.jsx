@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Navigation from './Navigation';
-import Expenses from "./ExpensesTable";
+import UserExpensesTable from "./UserExpensesTable";
 import Login from "./Login";
 import Register from "./Register";
 import AddExpense from "./AddExpense";
@@ -24,7 +24,7 @@ export default function App() {
                     </Route>
                     <Route exact path="/" >
                         <Navigation />
-                        <Expenses />
+                        <UserExpensesTable />
                     </Route>
                     <Route exact path="/add-expense">
                         <Navigation />

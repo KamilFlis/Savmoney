@@ -33,8 +33,8 @@ export default function Sidebar() {
     const classes = useStyles();
     const history = useHistory();
 
-    const data = ["Groups", "Reports", "Summary"];
-    const endpoints = ["/groups", "/reports", "/summary"];
+    const data = ["Groups", "Summary"];
+    const endpoints = ["/groups", "/summary"];
     
     const logoClick = () => {
         history.push("/");

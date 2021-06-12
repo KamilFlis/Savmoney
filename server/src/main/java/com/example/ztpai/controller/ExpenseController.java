@@ -124,20 +124,13 @@ public class ExpenseController {
         for(YearMonth date: dates) {
             double amount = 0;
             for(Expense expense: expenses) {
-                System.out.println(YearMonth.from(expense.getDate()));
                 if(YearMonth.from(expense.getDate()).equals(date)) {
-
-                    System.out.println("helo inside");
                     amount += expense.getAmount();
                 }
             }
 
             monthlyExpenses.put(date.toString(), amount);
         }
-
-        System.out.println(monthlyExpenses.get("2021-05"));
-        System.out.println(monthlyExpenses.get("2021-06"));
-
 
         return monthlyExpenses;
     }

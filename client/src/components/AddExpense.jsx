@@ -81,15 +81,12 @@ export default function AddExpense() {
             }
         })
         .then(response => {
-            console.log(response);
             if(response.status === 401) {
                 history.push("/login");
             }
 
             setCategories(response.data);
-        }, error => {
-            console.log(error);
-        });
+        }, error => console.error(error));
     }, [])
 
 
@@ -114,14 +111,11 @@ export default function AddExpense() {
             }
         })
         .then((response) => {
-            console.log(response);
             if(response.status === 401) {
                 history.push("/login");
             }
-        }, (error) => {
-            console.log(error);
-        });
-    }
+        }, error => console.error(error));
+    };
 
     return (
         <main className={classes.layout}>
