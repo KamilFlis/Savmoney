@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -18,7 +18,7 @@ export default function ExpenseTable(props) {
     
     const classes = props.styles;
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(8);
 
     const url = "http://localhost:8080/";
     const token = localStorage.getItem("token");
@@ -56,7 +56,7 @@ export default function ExpenseTable(props) {
         }, error => console.error(error));
     };
     
-    const handleChangePage = (newPage) => {
+    const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
@@ -85,13 +85,18 @@ export default function ExpenseTable(props) {
                     color="primary"
                     align="right"
                     onClick={() => {
-                        history.push(`/add-expense`)
+                        console.log(id);
+                        if(id) {
+                            history.push(`${id}/add-expense`);
+                        } else {
+                            history.push(`/add-expense`);
+                        }
                     }}
                 >
                     New expense
                 </Button> }
             </div>
-            <Typography component="h2" variant="h6" color="black" align="right" gutterBottom>
+            <Typography component="h2" variant="h6" align="right" gutterBottom>
                 {props.title}
             </Typography>
             <TableContainer className={classes.container}>
@@ -130,10 +135,10 @@ export default function ExpenseTable(props) {
                             );
                         })}
                     </TableBody>
-                </Table>
+                </Table>  
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10]}
+                rowsPerPageOptions={[8]}
                 component="div"
                 count={expenses.length}
                 rowsPerPage={rowsPerPage}

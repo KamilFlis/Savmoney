@@ -141,7 +141,7 @@ export default function Group() {
                 </Button>
                 <NewGroupForm />
             </div>
-            <Typography component="h2" variant="h6" color="black" align="left" gutterBottom>
+            <Typography component="h2" variant="h6" align="left" gutterBottom>
                 Your groups
             </Typography>
             { groups.map((group) => {

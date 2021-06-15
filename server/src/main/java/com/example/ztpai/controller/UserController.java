@@ -7,10 +7,14 @@ import com.example.ztpai.service.UserService;
 import com.example.ztpai.validator.UserValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
@@ -30,8 +34,8 @@ public class UserController {
     private String getUser() {
         String username;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
         } else {
             username = principal.toString();
         }
@@ -41,9 +45,9 @@ public class UserController {
     @PostMapping("/api/register")
     void register(@RequestBody User user, BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             System.out.println("Errors while registering");
-            return;
+            throw new BadCredentialsException("Wrong credentials");
         }
         userService.save(user);
     }
