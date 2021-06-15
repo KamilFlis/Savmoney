@@ -4,8 +4,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -40,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
+
     const classes = useStyles();
 
     const url = "http://localhost:8080"
@@ -47,6 +46,7 @@ export default function Login() {
 
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
+    const [wrongCredentials, setWrongCredentials] = useState(false);
 
     function handleSubmit(event) {
         axios.post(`${url}/api/login`, {
@@ -57,7 +57,12 @@ export default function Login() {
             localStorage.setItem("token", response.data);
             history.push("/");
 
-        }, error => console.error(error));
+        }, (error) => { 
+            if((error.response.status) === 401) {
+                setWrongCredentials(true);
+            }
+            console.error(error);
+        });
 
         event.preventDefault();
     };
@@ -106,6 +111,12 @@ export default function Login() {
                         autoComplete="current-password"
                         onChange={(event) => setPassword(event.target.value)}
                     />
+                    
+                    {wrongCredentials && <Typography component="h5">
+                        Wrong credentials!
+                    </Typography>
+                    }
+                    
                     <Button
                         type="submit"
                         fullWidth

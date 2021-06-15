@@ -96,7 +96,7 @@ export default function ExpenseTable(props) {
                     New expense
                 </Button> }
             </div>
-            <Typography component="h2" variant="h6" color="black" align="right" gutterBottom>
+            <Typography component="h2" variant="h6" align="right" gutterBottom>
                 {props.title}
             </Typography>
             <TableContainer className={classes.container}>

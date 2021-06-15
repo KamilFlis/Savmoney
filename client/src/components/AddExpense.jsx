@@ -60,6 +60,7 @@ export default function AddExpense() {
     const [currency, setCurrency] = useState('');
     const [category, setCategory] = useState('');
     const [categories, setCategories] = useState([]);
+    const [NaN, setNaN] = useState(false);
     
     let {id} = useParams();
     if(id === undefined) {
@@ -83,7 +84,6 @@ export default function AddExpense() {
             if(response.status === 401) {
                 history.push("/login");
             }
-
             setCategories(response.data);
         }, error => console.error(error));
     }, [])
@@ -127,6 +127,7 @@ export default function AddExpense() {
                     Add expense
                 </Typography>
                 <Grid container spacing={3}>
+                    
                     <Grid item xs={12}>
                         <TextField
                             required
@@ -135,8 +136,18 @@ export default function AddExpense() {
                             label="Amount"
                             fullWidth
                             autoComplete="amount"
-                            onChange={(event) => setAmount(event.target.value)}
+                            onChange={(event) => { 
+                                if(isNaN(amount)) {
+                                    setNaN(true);
+                                } else {
+                                    setNaN(false);
+                                }
+                                setAmount(event.target.value) 
+                            }}
                         />
+                        {NaN && <Typography>
+                            Input a number
+                        </Typography>}
                     </Grid>
                     <Grid item xs={12}>
                         <TextField

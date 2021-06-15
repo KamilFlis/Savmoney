@@ -153,13 +153,13 @@ export default function GroupDetails(props) {
                 </Button>
                 <AddUserForm />
             </div>
-            <Typography component="h2" variant="h6" color="black" align="left" gutterBottom>
+            <Typography component="h2" variant="h6" align="left" gutterBottom>
                 {`Name: ${group.name}`}
             </Typography>
-            <Typography component="h2" variant="h6" color="black" align="left" gutterBottom>
+            <Typography component="h2" variant="h6" align="left" gutterBottom>
                 {`Description: ${group.description}`}
             </Typography>
-            <Typography component="h2" variant="h6" color="black" align="left" gutterBottom>
+            <Typography component="h2" variant="h6" align="left" gutterBottom>
                 Users:
             </Typography>
             { users.map((user) => {

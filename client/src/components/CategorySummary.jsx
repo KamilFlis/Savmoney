@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'fixed',
         bottom: 80,
-        right: 80,
+        right: 120,
         width: '30%',
         [theme.breakpoints.down('md')]: {
             position: 'relative',
