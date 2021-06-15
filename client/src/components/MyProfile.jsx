@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.down('md')]: {
             width: '70%',
             marginLeft: 'auto',
-            // marginRight: 'auto',
         },
     },
     paper: {

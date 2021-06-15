@@ -9,22 +9,22 @@ import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'fixed',
-        bottom: 80,
+        top: 120,
         right: 80,
         width: '75%',
         [theme.breakpoints.down('md')]: {
+            top: 80,
             width: '65%',
             right: 30,
-            height: '75%',
         },
     },
     container: {
-        height: 600,
+        minHeight: 500,
     },
     buttons: {
         display: 'flex',
         justifyContent: 'flex-end',
-        marginRight: theme.spacing(2),
+        // marginRight: theme.spacing(2),
     },
     button: {
         marginRight: theme.spacing(2),
@@ -70,12 +70,14 @@ export default function GroupExpensesTable() {
     const columns = [
         {
             id: 'username',
-            label: "User", minWidth: 170,
+            label: "User", 
+            minWidth: 170,
             align: 'center',
         },
         {
             id: 'amount',
-            label: 'Amount', minWidth: 170,
+            label: 'Amount', 
+            minWidth: 170,
             align: "center",
         },
         {

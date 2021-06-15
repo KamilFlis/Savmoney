@@ -88,8 +88,6 @@ export default function AddExpense() {
         }, error => console.error(error));
     }, [])
 
-
-
     const handleChangeCurrency = (event) => {
         setCurrency(event.target.value);
     };
@@ -99,6 +97,12 @@ export default function AddExpense() {
     }
 
     const onSubmit = (event) => {
+        if(isNaN(amount)) {
+            return;
+        }
+        if(amount < 0) {
+            return;
+        }
         axios.post(`${url}api/expenses/${id}`, {
             amount: amount,
             comment: comment,

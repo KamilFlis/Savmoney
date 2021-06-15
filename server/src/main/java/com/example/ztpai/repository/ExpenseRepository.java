@@ -10,10 +10,11 @@ import java.util.List;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    List<Expense> findAllByUserId(Long userId);
     List<Expense> findAllByGroupId(Long groupId);
+
     List<Expense> findAllByUserIdAndGroupId(Long userId, Long groupId);
-    Expense findByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
+
+    Expense findTopByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
             Double amount,
             String comment,
             Long userId,

@@ -168,7 +168,7 @@ public class ExpenseService {
         if (expense.getGroup() != null)
             groupId = expense.getGroup().getId();
 
-        Expense expenseDelete = repository.findByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
+        Expense expenseDelete = repository.findTopByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
                 expense.getAmount(),
                 expense.getComment(),
                 expense.getUser().getId(),
