@@ -165,7 +165,7 @@ export default function GroupDetails(props) {
             { users.map((user) => {
                 return (
 					<div>
-						<ListItem alignImtex="flex-start">
+						<ListItem alignItems="flex-start">
 							<ListItemAvatar>
 								<Avatar alt="User" />
 							</ListItemAvatar>

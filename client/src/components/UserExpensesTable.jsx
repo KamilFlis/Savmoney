@@ -12,6 +12,11 @@ const useStyles = makeStyles((theme) => ({
         bottom: 80,
         right: 80,
         width: '75%',
+        [theme.breakpoints.down('md')]: {
+            width: '65%',
+            right: 30,
+            height: '75%',
+        },
     },
     container: {
         height: 600,
@@ -19,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     buttons: {
         display: 'flex',
         justifyContent: 'flex-end',
+        marginRight: theme.spacing(2),
     },
     deleteButton: {
         marginTop: theme.spacing(2),

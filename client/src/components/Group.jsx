@@ -148,7 +148,7 @@ export default function Group() {
                 return (
 					<div>
 						<ListItem component={Link} to={`/groups/${group.id}`}
-							alignImtex="flex-start">
+							alignItems="flex-start">
 							<ListItemAvatar>
 								<Avatar alt="Group" src="/static/images/avatar/1.jpg" />
 							</ListItemAvatar>

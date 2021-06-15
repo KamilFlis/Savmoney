@@ -9,6 +9,13 @@ const useStyles = makeStyles((theme) => ({
         bottom: 80,
         right: 680,
         width: '30%',
+        [theme.breakpoints.down('md')]: {
+            position: 'relative',
+            width: '65%',
+            top: 30,
+            left: 30,
+            height: '70%',
+        },
     },
     container: {
         height: 600,

@@ -1,14 +1,17 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core';
+
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: 'flex',
+    position: 'fixed',
+    top: 0,
+    width: '100%',
+    zIndex: 100,
   },
 }));
-
 
 export default function Navigation() {
 

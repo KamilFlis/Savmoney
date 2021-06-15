@@ -15,22 +15,21 @@ import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
     layout: {
-        width: 'auto',
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
-            width: 600,
+        width: '40%',
+        margin: 'auto',
+        marginTop: theme.spacing(15),
+        [theme.breakpoints.down('md')]: {
+            width: '70%',
             marginLeft: 'auto',
-            marginRight: 'auto',
+            marginRight: theme.spacing(3),
         },
     },
     paper: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3),
         padding: theme.spacing(2),
-        [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
-            marginTop: theme.spacing(6),
-            marginBottom: theme.spacing(6),
+        [theme.breakpoints.down('md')]: {
+            marginTop: theme.spacing(10),
             padding: theme.spacing(3),
         },
     },
@@ -44,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formControl: {
         margin: theme.spacing(1),
-        minWidth: 240,
+        minWidth: '100%',
     },
     selectEmpty: {
         marginTop: theme.spacing(2),

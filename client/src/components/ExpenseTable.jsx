@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -69,6 +68,18 @@ export default function ExpenseTable(props) {
     return (
         <Paper className={classes.root}>
             <div className={classes.buttons}>
+                { props.group && <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    align="right"
+                    onClick={() => {
+                        history.push(`${id}/details`)
+                    }}
+                >
+                    Group details
+                </Button> }
+
                 { props.add && <Button
                     variant="contained"
                     color="primary"

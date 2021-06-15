@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+
 import axios from 'axios';
+
 import CategorySummary from './CategorySummary';
 import MonthSummary from './MonthSummary';
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        [theme.breakpoints.down('md')]: {
+            display: 'flex',
+            marginTop: theme.spacing(5),
+            flexDirection: 'column',
+            alignItems: 'center',
+        }
+    },
+}));
 
 export default function Summary() {
 
@@ -10,6 +24,8 @@ export default function Summary() {
     const token = localStorage.getItem("token");
     const url = "http://localhost:8080/";
     
+    const classes = useStyles();
+
     const [categories, setCategories] = useState();
     const [months, setMonths] = useState();
 
@@ -54,10 +70,10 @@ export default function Summary() {
     }
 
     return (
-        <>
+        <div className={classes.container}>
             <MonthSummary data={months}/>
             <CategorySummary data={categories}/>;
-        </>
+        </div>
     );
     
 }
