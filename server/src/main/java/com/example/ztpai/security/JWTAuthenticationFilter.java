@@ -1,19 +1,14 @@
 package com.example.ztpai.security;
 
-import com.example.ztpai.model.User;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.example.ztpai.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-//import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -40,10 +35,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             User credentials = new ObjectMapper().readValue(request.getInputStream(), User.class);
 
-//            UserDetails credentials = userDetailsService.loadUserByUsername(creds.getUsername());
-//            System.out.println(credentials.getUsername());
-//            System.out.println(credentials.getPassword());
-
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credentials.getUsername(),
@@ -51,7 +42,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             new ArrayList<>())
             );
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -63,10 +54,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()));
 
-//        String body = ((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername() + " " + token;
-        String body = token;
-
-        response.getWriter().write(body);
+        response.getWriter().write(token);
         response.getWriter().flush();
     }
 

@@ -1,190 +1,53 @@
 package com.example.ztpai.controller;
 
 import com.example.ztpai.dto.ExpenseDTO;
-import com.example.ztpai.model.Category;
 import com.example.ztpai.model.Expense;
-import com.example.ztpai.model.User;
-import com.example.ztpai.repository.CategoryRepository;
-import com.example.ztpai.repository.ExpenseRepository;
-import com.example.ztpai.repository.GroupRepository;
-import com.example.ztpai.repository.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import com.example.ztpai.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
 
     @Autowired
-    private ExpenseRepository repository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private ModelMapper modelMapper;
-
-    private String getUser() {
-        String username;
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
-        return username;
-    }
-
-    private LocalDateTime getCurrentDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        return LocalDateTime.parse(LocalDateTime.now().format(formatter)).withNano(0);
-    }
+    private ExpenseService expenseService;
 
     @GetMapping
-    List<ExpenseDTO> all() {
-        Long userId = userRepository.findByUsername(getUser()).getId();
-        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
-        List<ExpenseDTO> expensesDTO = new ArrayList<>();
-
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
-        if(modelMapper.getTypeMap(Expense.class, ExpenseDTO.class) == null) {
-            modelMapper.createTypeMap(Expense.class, ExpenseDTO.class)
-                    .addMappings(mapper -> mapper.map(src -> src.getCategory().getName(), ExpenseDTO::setCategory));
-        }
-
-        for(Expense expense: expenses) {
-            expensesDTO.add(modelMapper.map(expense, ExpenseDTO.class));
-        }
-
-        return expensesDTO;
+    public List<ExpenseDTO> all() {
+        return expenseService.all();
     }
 
     @PostMapping("/{id}")
-    Expense newExpense(@RequestBody ExpenseDTO newExpense, @PathVariable Long id) {
-        Expense expense = modelMapper.map(newExpense, Expense.class);
-        if(id != 0) {
-            expense.setGroup(groupRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-        }
-
-        expense.setUser(userRepository.findByUsername(getUser()));
-        expense.setCategory(categoryRepository.findCategoryByName(newExpense.getCategory()));
-        expense.setDate(getCurrentDate());
-        return repository.save(expense);
+    public Expense newExpense(@RequestBody ExpenseDTO newExpense, @PathVariable Long id) {
+        return expenseService.newExpense(newExpense, id);
     }
 
     @GetMapping("/{id}")
-    Expense one(@PathVariable Long id) {
-        return repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+    public Expense one(@PathVariable Long id) {
+        return expenseService.one(id);
     }
 
     @PutMapping("/{id}")
-    Expense replaceExpense(@RequestBody Expense newExpense, @PathVariable Long id) {
-        return repository.findById(id)
-                .map(expense -> {
-                    expense.setAmount(newExpense.getAmount());
-                    expense.setCategory(newExpense.getCategory());
-                    expense.setComment(newExpense.getComment());
-                    expense.setCurrency(newExpense.getCurrency());
-                    expense.setDate(newExpense.getDate());
-                    return repository.save(expense);
-                })
-                .orElseGet(() -> {
-                    newExpense.setId(id);
-                    return repository.save(newExpense);
-                });
+    public Expense replaceExpense(@RequestBody Expense newExpense, @PathVariable Long id) {
+        return expenseService.replaceExpense(newExpense, id);
     }
 
     @GetMapping("/monthly")
-    Map<String, Double> getMonthlyExpenses() {
-        Long userId = userRepository.findByUsername(getUser()).getId();
-        Map<String, Double> monthlyExpenses = new HashMap<>();
-        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
-        List<YearMonth> dates = new ArrayList<>();
-        for(Expense expense: expenses) {
-            YearMonth date = YearMonth.from(expense.getDate());
-            if(!dates.contains(date)) {
-                dates.add(YearMonth.from(date));
-            }
-        }
-
-        for(YearMonth date: dates) {
-            double amount = 0;
-            for(Expense expense: expenses) {
-                if(YearMonth.from(expense.getDate()).equals(date)) {
-                    amount += expense.getAmount();
-                }
-            }
-
-            monthlyExpenses.put(date.toString(), amount);
-        }
-
-        return monthlyExpenses;
+    public Map<String, Double> getMonthlyExpenses() {
+        return expenseService.getMonthlyExpenses();
     }
 
     @GetMapping("/category")
-    Map<String, Double> getCategoryExpenses() {
-        Long userId = userRepository.findByUsername(getUser()).getId();
-        Map<String, Double> categoryExpenses = new HashMap<>();
-        List<Expense> expenses = repository.findAllByUserIdAndGroupId(userId, null);
-        List<Category> categories = new ArrayList<>();
-        for(Expense expense: expenses) {
-            Category category = expense.getCategory();
-            if(!categories.contains(category)) {
-                categories.add(category);
-            }
-        }
-
-        for(Category category: categories) {
-            double amount = 0;
-            for(Expense expense: expenses) {
-                if(expense.getCategory() == category) {
-                    amount += expense.getAmount();
-                }
-            }
-            categoryExpenses.put(category.getName(), amount);
-        }
-
-        return categoryExpenses;
+    public Map<String, Double> getCategoryExpenses() {
+        return expenseService.getCategoryExpenses();
     }
 
     @DeleteMapping("/{id}")
-    void deleteExpense(@RequestBody ExpenseDTO expenseToDelete, @PathVariable Long id) {
-        Expense expense = modelMapper.map(expenseToDelete, Expense.class);
-        if(id != 0) {
-            expense.setGroup(groupRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-        }
-
-        expense.setUser(userRepository.findByUsername(getUser()));
-        expense.setCategory(categoryRepository.findCategoryByName(expenseToDelete.getCategory()));
-
-        Long groupId = null;
-        if(expense.getGroup() != null)
-            groupId = expense.getGroup().getId();
-
-        Expense expenseDelete = repository.findByAmountAndCommentAndUserIdAndGroupIdAndCategoryIdAndCurrencyAndDate(
-                expense.getAmount(),
-                expense.getComment(),
-                expense.getUser().getId(),
-                groupId,
-                expense.getCategory().getId(),
-                expense.getCurrency(),
-                expense.getDate()
-        );
-
-        repository.delete(expenseDelete);
+    public void deleteExpense(@RequestBody ExpenseDTO expenseToDelete, @PathVariable Long id) {
+        expenseService.deleteExpense(expenseToDelete, id);
     }
 }
